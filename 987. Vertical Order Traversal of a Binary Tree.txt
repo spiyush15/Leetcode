@@ -1,0 +1,75 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int mincol = 100000000;
+    Map<Integer,Map<Integer,List<Integer>>> mp = new HashMap<>();
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        populateMap(root,0,0);
+        List<List<Integer>> result = new ArrayList<>();
+        // List<Map.Entry<Integer,Map<Integer,List<Integer>>>> entries = new ArrayList<>(mp.entrySet());
+        // Collections.sort(entries, new Comparator<Map.Entry<Integer, Map<Integer, List<Integer>>>>() {
+        //     @Override
+        //     public int compare(Map.Entry<Integer, Map<Integer, List<Integer>>> o1, Map.Entry<Integer, Map<Integer, List<Integer>>> o2) {
+        //         return o1.getKey().compareTo(o2.getKey());
+        //     }
+        // });
+        TreeMap<Integer,Map<Integer,List<Integer>>> tmp = new TreeMap<Integer,Map<Integer,List<Integer>>>(mp);
+        //System.out.println(tmp);
+        
+        for(Map.Entry<Integer,Map<Integer,List<Integer>>>entry:tmp.entrySet()){
+            TreeMap<Integer,List<Integer>> tmp1 = new TreeMap<Integer,List<Integer>>(entry.getValue());
+            List<Integer>te = new ArrayList<>();
+            for(Map.Entry<Integer,List<Integer>> entryy : tmp1.entrySet()){
+                List<Integer> li = entryy.getValue();
+                Collections.sort(li);
+                te.addAll(li);
+            }
+            result.add(te);
+        }
+        return result;
+    }
+    
+    public void populateMap(TreeNode root, int row, int column){
+        if(root==null)
+            return;
+        mincol = Math.min(mincol,column);
+        if(mp.containsKey(column)){
+            Map<Integer,List<Integer>> temp = mp.get(column);
+            if(temp.containsKey(row)){
+                List<Integer>li = temp.get(row);
+                li.add(root.val);
+                temp.put(row,li);
+                mp.put(column,temp);
+            }
+            else{
+                List<Integer>li = new ArrayList<>();
+                li.add(root.val);
+                temp.put(row,li);
+                mp.put(column,temp);
+            }
+        }
+        else{
+                List<Integer>temp2 = new ArrayList<>();
+                temp2.add(root.val);
+                Map<Integer,List<Integer>> temp1 = new HashMap<>();
+                temp1.put(row,temp2);
+                mp.put(column,temp1);
+                //System.out.println(mp);
+        }
+        populateMap(root.left,row+1,column-1);
+        populateMap(root.right,row+1,column+1);
+    }
+}
